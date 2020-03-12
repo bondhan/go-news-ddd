@@ -1,0 +1,60 @@
+version: '3.4'
+
+services:
+  postgres-svc:
+    image: postgres:12.1
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=godddnews_db
+    volumes:
+      - postgresql:/var/lib/godddnews_postgres
+      - postgresql_data:/var/lib/godddnews_postgres/data
+    ports:
+      - 54322:5432     
+      
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8889:8080
+    depends_on: 
+      - postgres-svc
+
+  godddnews:
+    image: godddnews:latest
+    env_file:
+      - .env
+    
+    healthcheck:
+      test: "${DOCKER_HEALTHCHECK_TEST:-curl godddnews:8080/ping}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"      
+    depends_on:
+      - postgres-svc
+    volumes:
+      - "./:/go/src/github.com/bondhan/godddnews"
+
+  migrate:
+    image: migrate:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-migration
+    command: ["/bin/bash -c", "/bin/wait-for-it.sh --host=godddnews --port=8080 --timeout=600"]
+    command: ["/bin/bash", "-c", "/bin/migrate -database postgres://root:root@postgres-svc:5432/godddnews_db?sslmode=disable -path /migration/scripts up"]
+    volumes:
+      - ./migration/scripts:/migration/scripts
+    depends_on:
+      - godddnews
+      
+volumes:
+  postgresql:
+  postgresql_data:  

@@ -1,0 +1,31 @@
+FROM golang:1.13-alpine AS build-env
+ARG action
+
+ENV GO111MODULE=on
+ENV DATABASES="postgres"
+ENV SOURCES="file"
+ENV TAGS=v4.8.0
+ENV PROJECT=src/github.com/bondhan/godddnews
+
+COPY . $GOPATH/$PROJECT
+WORKDIR $GOPATH/$PROJECT
+
+RUN apk add --no-cache --virtual .build-deps --no-progress -q curl \
+    && curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz \
+    && mv migrate.linux-amd64 /bin/migrate
+
+FROM alpine
+
+RUN mkdir /migration
+RUN mkdir /migration/scripts
+
+RUN apk add --no-cache --virtual .build-deps --no-progress -q bash
+RUN apk update && apk add --no-cache coreutils
+
+COPY --from=build-env /bin/migrate /bin/migrate
+COPY --from=build-env /go/src/github.com/bondhan/godddnews/wait-for-it.sh /bin/wait-for-it.sh
+
+RUN chmod +x /bin/wait-for-it.sh
+COPY --from=build-env /go/src/github.com/bondhan/godddnews/migration/scripts/* /migration/scripts/
+
+#RUN /bin/wait-for-it.sh --host=postgres-svc --port=5432 --timeout=120 -- /bin/bash
