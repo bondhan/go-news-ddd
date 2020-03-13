@@ -8,7 +8,6 @@ import (
 	"github.com/bondhan/godddnews/application/view"
 	"github.com/bondhan/godddnews/domain"
 	"github.com/bondhan/godddnews/domain/repository"
-	"github.com/bondhan/godddnews/internal/utils"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )
@@ -56,15 +55,6 @@ func (n *newsApp) AddNews(newsData view.NewsData) error {
 	var err error
 
 	logrus.Debug("AddNews")
-	err = utils.ValidateModels(newsData)
-	if err != nil {
-		return err
-	}
-
-	err = utils.ValidateSlug(newsData.Slug)
-	if err != nil {
-		return err
-	}
 
 	nws, err := n.newsRepo.GetNewsBySlug(newsData.Slug)
 	//if error was not caused by empty select, means something happened during query to db
@@ -77,15 +67,18 @@ func (n *newsApp) AddNews(newsData view.NewsData) error {
 		return errors.New("Data already exist")
 	}
 
+	//compose the news
 	news := domain.News{
 		Title: newsData.Title,
 		Slug:  newsData.Slug,
 	}
 
+	//if we create news and specify the ID in DB
 	if newsData.ID > 0 {
 		news.ID = newsData.ID
 	}
 
+	//since contents is optional so we are checking if it is non empty
 	if strings.TrimSpace(newsData.Content) != "" {
 		news.Content = newsData.Content
 	}
@@ -93,12 +86,14 @@ func (n *newsApp) AddNews(newsData view.NewsData) error {
 	if strings.TrimSpace(newsData.Status) != "" {
 		news.Status = newsData.Status
 	}
+
 	// when creating a new news version default is 0
 	// we override to 1 as default value
 	if news.Version < 1 {
 		news.Version = 1
 	}
 
+	//check if topic that the news is about already exist
 	var topics []domain.Topic
 	for _, slug := range newsData.TopicSlugs {
 		topic, err := n.topicRepo.GetATopicBySlug(slug)
@@ -108,6 +103,7 @@ func (n *newsApp) AddNews(newsData view.NewsData) error {
 		topics = append(topics, topic)
 	}
 
+	//check if tag that the news is about already exist
 	var tags []domain.Tag
 	for _, slug := range newsData.TagSlugs {
 		tag, err := n.tagRepo.GetATagBySlug(slug)
@@ -117,6 +113,7 @@ func (n *newsApp) AddNews(newsData view.NewsData) error {
 		tags = append(tags, tag)
 	}
 
+	//do insertion
 	err = n.newsRepo.InsertNews(news, topics, tags)
 
 	return err
@@ -154,16 +151,6 @@ func (n *newsApp) UpdateNewsBySlug(newsData view.NewsData, oldslug string) error
 	var err error
 
 	logrus.Debug("UpdateNewsBySlug")
-
-	err = utils.ValidateModels(newsData)
-	if err != nil {
-		return err
-	}
-
-	err = utils.ValidateSlug(newsData.Slug)
-	if err != nil {
-		return err
-	}
 
 	nws, err := n.newsRepo.GetNewsBySlug(oldslug)
 	//if error was not caused by empty select, means something happened during query to db
@@ -255,17 +242,6 @@ func (n *newsApp) UpdateNewsByID(newsData view.NewsData, ID uint) error {
 	var err error
 
 	logrus.Debug("UpdateNewsByID")
-
-	err = utils.ValidateModels(newsData)
-	if err != nil {
-		return err
-	}
-
-	err = utils.ValidateSlug(newsData.Slug)
-	if err != nil {
-		return err
-	}
-
 	nws, err := n.newsRepo.GetNewsByID(ID)
 	//if error was not caused by empty select, means something happened during query to db
 	if gorm.IsRecordNotFoundError(err) {

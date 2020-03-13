@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bondhan/godddnews/infrastructure/driver"
+	"github.com/bondhan/godddnews/infrastructure/manager"
 	"github.com/bondhan/godddnews/interfaces"
-	"github.com/bondhan/godddnews/internal/driver"
-	"github.com/bondhan/godddnews/internal/manager"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +26,6 @@ func main() {
 	manager.GetContainer()
 	logrus.Info("manager was called")
 
-	log.Info("application started at port:", os.Getenv("APPLICATION_PORT"))
+	logrus.Info("application started at port:", os.Getenv("APPLICATION_PORT"))
 	interfaces.Init(os.Getenv("APPLICATION_PORT"))
 }

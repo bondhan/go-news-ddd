@@ -8,8 +8,9 @@ import (
 
 	"github.com/bondhan/godddnews/application"
 	"github.com/bondhan/godddnews/application/view"
+	"github.com/bondhan/godddnews/infrastructure/manager"
 	"github.com/bondhan/godddnews/interfaces/respond"
-	"github.com/bondhan/godddnews/internal/manager"
+	"github.com/bondhan/godddnews/internal/utils"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 )
@@ -60,7 +61,19 @@ func createNews(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := newsApp.AddNews(p)
+		err := utils.ValidateModels(p)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
+
+		err = utils.ValidateSlug(p.Slug)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
+
+		err = newsApp.AddNews(p)
 		if err != nil {
 			respond.Error(w, http.StatusConflict, fmt.Errorf("%s", err.Error()))
 			return
@@ -73,7 +86,6 @@ func createNews(w http.ResponseWriter, r *http.Request) {
 func getNewsBySlug(w http.ResponseWriter, r *http.Request) {
 	manager.GetContainer().Invoke(func(newsApp application.NewsApp) {
 
-		logrus.Debug("getNewsBySlug")
 		param := chi.URLParam(r, "newsSlug")
 
 		news, err := newsApp.GetNewsBySlug(param)
@@ -95,10 +107,20 @@ func updateNewsBySlug(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		logrus.Debug("updateNewsBySlug")
-		param := chi.URLParam(r, "newsSlug")
+		err := utils.ValidateModels(p)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
 
-		err := newsApp.UpdateNewsBySlug(p, param)
+		err = utils.ValidateSlug(p.Slug)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
+
+		param := chi.URLParam(r, "newsSlug")
+		err = newsApp.UpdateNewsBySlug(p, param)
 		if err != nil {
 			respond.Error(w, http.StatusConflict, fmt.Errorf("%s", err.Error()))
 			return
@@ -111,7 +133,6 @@ func updateNewsBySlug(w http.ResponseWriter, r *http.Request) {
 func deleteNewsBySlug(w http.ResponseWriter, r *http.Request) {
 	manager.GetContainer().Invoke(func(newsApp application.NewsApp) {
 
-		logrus.Debug("deleteNewsBySlug")
 		param := chi.URLParam(r, "newsSlug")
 
 		err := newsApp.DeleteNewsBySlug(param)
@@ -156,8 +177,20 @@ func updateNewsByID(w http.ResponseWriter, r *http.Request) {
 		}
 
 		logrus.Debug("updateNewsByID")
-		param := chi.URLParam(r, "newsID")
 
+		err := utils.ValidateModels(p)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
+
+		err = utils.ValidateSlug(p.Slug)
+		if err != nil {
+			respond.Error(w, http.StatusBadRequest, fmt.Errorf("%s", err.Error()))
+			return
+		}
+
+		param := chi.URLParam(r, "newsID")
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			respond.Error(w, http.StatusNotFound, fmt.Errorf("Data Not Found"))

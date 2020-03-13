@@ -9,7 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bondhan/godddnews/domain"
 	"github.com/bondhan/godddnews/internal/manager"
+	"github.com/jinzhu/gorm"
 )
 
 type newsData struct {
@@ -23,7 +25,7 @@ type newsData struct {
 	Tags    []string `json:"tag_slugs"`
 }
 
-func TestMain(m *testing.M) {
+func setup() {
 	os.Setenv("DB_HOST", "localhost")
 	os.Setenv("DB_PORT", "54322")
 	os.Setenv("DB_USER", "root")
@@ -32,7 +34,18 @@ func TestMain(m *testing.M) {
 	os.Setenv("DB_SSLMODE", "disable")
 	os.Setenv("PRODUCTION_ENV", "false")
 
-	manager.GetContainer()
+	//clean DB
+	manager.GetContainer().Invoke(func(db *gorm.DB) {
+		db.Unscoped().Delete(&domain.TagNews{})
+		db.Unscoped().Delete(&domain.TopicNews{})
+		db.Unscoped().Delete(&domain.Tag{})
+		db.Unscoped().Delete(&domain.Topic{})
+		db.Unscoped().Delete(&domain.News{})
+	})
+}
+
+func TestMain(m *testing.M) {
+	setup()
 
 	os.Exit(m.Run())
 }
@@ -62,7 +75,6 @@ func TestHealthCheckPing(t *testing.T) {
 	}
 }
 
-// TestGetAllNewsHandler is testing if duplicate news is handled
 func TestGetAllNewsHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "localhost:8080/api/v1/news", nil)
@@ -81,7 +93,6 @@ func TestGetAllNewsHandler(t *testing.T) {
 	}
 }
 
-// TestGetAllTopicHandler is testing if duplicate news is handled
 func TestGetAllTopicHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "localhost:8080/api/v1/topic", nil)
@@ -101,7 +112,6 @@ func TestGetAllTopicHandler(t *testing.T) {
 
 }
 
-// TestGetAllTagHandler is testing if duplicate news is handled
 func TestGetAllTagHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "localhost:8080/api/v1/tag", nil)
@@ -120,7 +130,6 @@ func TestGetAllTagHandler(t *testing.T) {
 	}
 }
 
-// TestGetAllNewsByTopicSlugHandler is testing if duplicate news is handled
 func TestGetAllNewsByTopicSlugHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "localhost:8080/api/v1/news/topic/politics", nil)
@@ -139,7 +148,6 @@ func TestGetAllNewsByTopicSlugHandler(t *testing.T) {
 	}
 }
 
-// TestGetAllNewsByTagSlugHandler is testing if duplicate news is handled
 func TestGetAllNewsByTagSlugHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "localhost:8080/api/v1/news/tag/other-tag", nil)
@@ -158,7 +166,6 @@ func TestGetAllNewsByTagSlugHandler(t *testing.T) {
 	}
 }
 
-// TestCreateNewsHandler is creating a new news
 func TestCreateNewsHandler(t *testing.T) {
 
 	nData := newsData{

@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/bondhan/godddnews/internal/driver"
+	"github.com/bondhan/godddnews/infrastructure/driver"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )

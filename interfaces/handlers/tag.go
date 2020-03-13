@@ -8,8 +8,8 @@ import (
 
 	"github.com/bondhan/godddnews/application"
 	"github.com/bondhan/godddnews/domain"
+	"github.com/bondhan/godddnews/infrastructure/manager"
 	"github.com/bondhan/godddnews/interfaces/respond"
-	"github.com/bondhan/godddnews/internal/manager"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 )
