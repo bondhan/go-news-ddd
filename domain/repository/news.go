@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/bondhan/godddnews/application/view"
 	"github.com/bondhan/godddnews/domain"
+	"github.com/bondhan/godddnews/usecase/view"
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,7 +20,6 @@ type NewsRepository interface {
 	InsertNews(News domain.News, NewTopics []domain.Topic, NewTags []domain.Tag) error
 	GetNewsBySlug(slug string) (domain.News, error)
 	GetNewsByID(ID uint) (domain.News, error)
-	GetANewsxxx() ([]domain.News, error)
 	UpdateNews(News domain.News, NewTopics []domain.Topic, NewTags []domain.Tag) error
 	DeleteNewsBySlug(News domain.News, OldTopics []domain.Topic, OldTags []domain.Tag) error
 	GetNewsByTopicSlug(slug string) ([]*domain.News, error)
@@ -31,16 +30,6 @@ type newsRepository struct {
 	db        *gorm.DB
 	topicRepo TopicRepository
 	tagRepo   TagRepository
-}
-
-func (n *newsRepository) GetANewsxxx() ([]domain.News, error) {
-
-	news := []domain.News{}
-	if err := n.db.Preload("Topics").Preload("Tags").Find(&news).Error; err != nil {
-		return news, err
-	}
-
-	return news, nil
 }
 
 //NewNewsRepository ...

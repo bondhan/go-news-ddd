@@ -131,7 +131,7 @@ docker-compose up -d
   - Docker & Docker compose
 
 ### Database Design ###
-![Image Database Design](images/database.png)
+![Image Database Design](docs/images/database.png)
 
 
 ## URL ENDPOINT

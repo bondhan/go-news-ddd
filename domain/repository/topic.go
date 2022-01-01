@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"github.com/bondhan/godddnews/domain"
 	"github.com/jinzhu/gorm"
 )
@@ -17,7 +18,7 @@ type TopicRepository interface {
 }
 
 type topicRepository struct {
-	db *gorm.DB
+	db *sql.DB
 }
 
 //NewTopicRepository ...

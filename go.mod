@@ -22,6 +22,7 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-colorable v0.1.6
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/snowzach/rotatefilehook v0.0.0-20180327172521-2f64f265f58c
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71 // indirect

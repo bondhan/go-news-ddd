@@ -1,11 +1,11 @@
-package application
+package usecase
 
 import (
 	"errors"
+	"github.com/bondhan/godddnews/infrastructure/utils"
 
 	"github.com/bondhan/godddnews/domain"
 	"github.com/bondhan/godddnews/domain/repository"
-	"github.com/bondhan/godddnews/internal/utils"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )
