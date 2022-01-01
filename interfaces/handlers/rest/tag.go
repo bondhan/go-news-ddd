@@ -7,12 +7,14 @@ import (
 )
 
 // InitTagRouter .
-func InitTagRouter(r *chi.Mux, t TagHandlers) {
+func InitTagRouter(r *chi.Mux, t TagHandlers) http.Handler {
 	r.Route("/api/v1/tag", func(r chi.Router) {
 		r.Get("/", t.getAllTag)
 		r.Post("/", t.createTag)
 
 	})
+
+	return r
 }
 
 type tag struct {

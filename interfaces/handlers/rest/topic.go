@@ -7,11 +7,13 @@ import (
 )
 
 // InitTopicRouter .
-func InitTopicRouter(r *chi.Mux, t TopicHandler) {
+func InitTopicRouter(r *chi.Mux, t TopicHandler) http.Handler {
 	r.Route("/api/v1/topic", func(r chi.Router) {
 		r.Get("/", t.getAllTopic)
 		r.Post("/", t.createTopic)
 	})
+
+	return r
 }
 
 type topic struct {

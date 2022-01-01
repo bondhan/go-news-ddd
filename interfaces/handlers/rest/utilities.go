@@ -6,9 +6,11 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func InitUtilitiesRouter(r *chi.Mux, u UtilitiesHandlers) {
+func InitUtilitiesRouter(r *chi.Mux, u UtilitiesHandlers) http.Handler {
 	r.Get("/", u.hello)
 	r.Get("/ping", u.ping)
+
+	return r
 }
 
 type utilities struct {

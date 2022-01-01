@@ -15,9 +15,14 @@ func InitApplicationAndRouters(manager client.Manager) *chi.Mux {
 	tagHandlers := rest.NewTagHandlers(manager)
 
 	rest.InitUtilitiesRouter(r, utilitiesHandlers)
-	rest.InitNewsRouter(r, newsHandlers)
-	rest.InitTopicRouter(r, topicHandlers)
-	rest.InitTagRouter(r, tagHandlers)
+
+	routers := chi.NewRouter()
+	rest.InitNewsRouter(routers, newsHandlers)
+	rest.InitTopicRouter(routers, topicHandlers)
+	rest.InitTagRouter(routers, tagHandlers)
+
+	r.Mount("/api/v1", routers)
+	r.NotFoundHandler()
 
 	return r
 }

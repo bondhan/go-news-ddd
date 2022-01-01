@@ -1,18 +1,21 @@
 package rest
 
 import (
+	"github.com/bondhan/godddnews/domain/constants"
 	"github.com/bondhan/godddnews/infrastructure/client"
 	"github.com/go-chi/chi"
 	"net/http"
 )
 
 // InitNewsRouter .
-func InitNewsRouter(r *chi.Mux, n NewsHandlers) {
+func InitNewsRouter(r *chi.Mux, n NewsHandlers) http.Handler {
 
-	r.Route("/api/v1/news", func(r chi.Router) {
+	r.Route("/news", func(r chi.Router) {
 		r.Get("/", n.getAllNews)
 		r.Post("/", n.createNews)
 	})
+
+	return r
 }
 
 type news struct {
@@ -29,9 +32,12 @@ func NewNewsHandlers(mgr client.Manager) NewsHandlers {
 }
 
 func (n *news) getAllNews(w http.ResponseWriter, r *http.Request) {
+	respClient := n.manager.GetObject(constants.RespondClient).(client.ResponseClient)
 
+	respClient.JSON(w, r, http.StatusOK, "getAllNews")
 }
 
 func (n *news) createNews(w http.ResponseWriter, r *http.Request) {
-
+	respClient := n.manager.GetObject(constants.RespondClient).(client.ResponseClient)
+	respClient.JSON(w, r, http.StatusOK, "createNews")
 }

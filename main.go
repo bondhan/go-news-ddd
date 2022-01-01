@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/bondhan/godddnews/domain/constants"
 	"github.com/bondhan/godddnews/infrastructure"
 	"github.com/bondhan/godddnews/infrastructure/client"
 	errorcodes "github.com/bondhan/godddnews/infrastructure/error"
@@ -19,10 +20,7 @@ import (
 )
 
 const (
-	Production    = "PRODUCTION"
-	Logger        = "Logger"
-	SqlHandler    = "SqlHandler"
-	RespondClient = "RespondClient"
+	Production = "PRODUCTION"
 )
 
 func main() {
@@ -67,9 +65,9 @@ func main() {
 
 	//instantiate manager for common object manager
 	manager := client.NewManager()
-	manager.SetObject(Logger, logger)
-	manager.SetObject(SqlHandler, sqlHandler)
-	manager.SetObject(RespondClient, respClient)
+	manager.SetObject(constants.Logger, logger)
+	manager.SetObject(constants.SqlHandler, sqlHandler)
+	manager.SetObject(constants.RespondClient, respClient)
 	logger.Info("manager created")
 
 	//init all layers and routers
