@@ -1,6 +1,8 @@
 # go-news-ddd
 (a try) Implementation of Domain Design Driven (DDD) on a news website (News, Topics and Tags)
 
+This was for technical test of a company in Jakarta.
+
 ## Requirements
 
 Mandatory:
